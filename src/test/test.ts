@@ -1,6 +1,6 @@
-import { WaterRower } from '..';
 import { assert } from 'chai';
 import { describe, beforeEach, it } from "mocha";
+import { WaterRower } from '../index.js';
 
 describe('waterrower', () => {
 
@@ -27,13 +27,13 @@ describe('waterrower', () => {
       let waterrower = new WaterRower();
       waterrower.playRecording('simulationdata');
       waterrower.startRecording();
-      setTimeout(function() { waterrower.stopRecording(); }, 10000);
+      setTimeout(function () { waterrower.stopRecording(); }, 10000);
     });
   });
 
   // datapoint processing
   describe('datapoint processing', () => {
-    let waterrower;
+    let waterrower: WaterRower;
 
     beforeEach(done => {
       waterrower = new WaterRower();
@@ -47,7 +47,7 @@ describe('waterrower', () => {
         assert.equal(point.value, 7350);
         done();
       });
-      waterrower.reads$.next({ time: 1468559128188, type: 'datapoint', data: 'IDD0571CB6\r'});
+      waterrower.reads$.next({ time: 1468559128188, type: 'datapoint', data: 'IDD0571CB6\r' });
     });
 
     it('treats display minutes as a decimal integer', done => {
@@ -56,7 +56,7 @@ describe('waterrower', () => {
         assert.equal(point.value, 28);
         done();
       });
-      waterrower.reads$.next({ time: 1468559128188, type: 'datapoint', data: 'IDS1E228\r'});
+      waterrower.reads$.next({ time: 1468559128188, type: 'datapoint', data: 'IDS1E228\r' });
     });
   });
 });

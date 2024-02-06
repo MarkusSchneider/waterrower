@@ -3,10 +3,12 @@
   "version": "0.8.5",
   "description": "Talk to your WaterRower!",
   "main": "lib/index.js",
+  "type": "module",
   "scripts": {
     "build": "tsc",
     "watch": "tsc -w",
     "test": "mocha lib/test",
+    "test2": "mocha src/test/*.ts",
     "start": "node ./lib/sample-client/.",
     "postinstall": "tsc"
   },
@@ -26,20 +28,19 @@
   "author": "Jeremy Foster <jeremy.foster@live.com>",
   "license": "Apache-2.0",
   "dependencies": {
+    "all-your-base": "0.3.0",
+    "moment": "2.30.1",
+    "rxjs": "7.8.1",
+    "serialport": "12.0.0",
+    "typescript": "5.3.3"
+  },
+  "devDependencies": {
     "@types/chai": "4.3.11",
-    "@types/lodash": "4.14.202",
     "@types/mocha": "10.0.6",
     "@types/node": "20.11.16",
     "@types/serialport": "8.0.5",
-    "all-your-base": "0.3.0",
-    "lodash": "4.17.21",
-    "moment": "2.30.1",
-    "rxjs": "7.8.1",
-    "typescript": "5.3.3",
-    "serialport": "12.0.0"
-  },
-  "devDependencies": {
+    "chai": "5.0.3",
     "mocha": "10.2.0",
-    "chai": "4.4.1"
+    "ts-node": "10.9.2"
   }
 }

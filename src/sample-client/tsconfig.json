@@ -1,15 +1,22 @@
 {
 	"compilerOptions": {
+		"module": "Node16",
+		"esModuleInterop": true,
+		"allowSyntheticDefaultImports": true,
 		"target": "es6",
-		"module": "commonjs",
-		"moduleResolution": "node",
+		"noImplicitAny": true,
+		"moduleResolution": "Node16",
 		"sourceMap": true,
-		"emitDecoratorMetadata": true,
-		"experimentalDecorators": true,
-		"removeComments": false,
-		"noImplicitAny": false
+		"outDir": "dist",
+		"baseUrl": ".",
+		"paths": {
+			"*": [
+				"node_modules/*",
+				"src/types/*"
+			]
+		}
 	},
-	"exclude": [
-		"node_modules"
+	"include": [
+		"src/**/*"
 	]
 }
