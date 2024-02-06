@@ -1,5 +1,4 @@
-import { Observable, Subject } from 'rxjs/Rx';
-import * as SerialPort from 'serialport';
+// import * as SerialPort from 'serialport';
 import * as ayb from 'all-your-base';
 import { padStart, find, includes } from "lodash";
 import * as events from 'events';
@@ -9,19 +8,21 @@ import * as fs from 'fs';
 import * as readline from 'readline';
 import * as moment from 'moment';
 import * as path from 'path';
+import { Observable, Subject, filter, map } from 'rxjs';
+import { SerialPort, SerialPortOpenOptions } from 'serialport';
 
 export class WaterRower extends events.EventEmitter {
     private refreshRate: number = 200;
     private baudRate: number = 19200;
-    private port: SerialPort;
+    private port: SerialPort | null = null;
     private dataDirectory: string = 'lib/data';
     private datapoints: string | string[];
-    private recordingSubscription;
+    private recordingSubscription: Subject<ReadValue> | null = null;
 
     // reads$ is all serial messages from the WR
     // datapoints$ isonly the reads that are a report of a memory location's value 
     reads$ = new Subject<ReadValue>();
-    datapoints$: Observable<DataPoint>;
+    datapoints$: Observable<DataPoint>  = of<DataPoints>();
 
     constructor(options: WaterRowerOptions = {}) {
         super();
@@ -29,7 +30,7 @@ export class WaterRower extends events.EventEmitter {
         this.dataDirectory = options.dataDirectory || this.dataDirectory;
         this.refreshRate = options.refreshRate || this.refreshRate;
         this.baudRate = options.baudRate || this.baudRate;
-        this.datapoints = options.datapoints;
+        this.datapoints = options.datapoints ?? [];
 
         if (!options.portName) {
             console.log('No port configured. Attempting to discover...');
@@ -67,7 +68,7 @@ export class WaterRower extends events.EventEmitter {
         });
     }
 
-    private setupSerialPort(options) {
+    private setupSerialPort(options: SerialPortOpenOptions) {
         // setup the serial port
         this.port = new SerialPort(options.portName, {
             baudRate: options.baudRate || this.baudRate
@@ -93,9 +94,9 @@ export class WaterRower extends events.EventEmitter {
     private setupStreams() {
         // this is the important stream for reading memory locations from the rower
         // IDS is a single, IDD is a double, and IDT is a triple byte memory location
-        this.datapoints$ = this.reads$
-            .filter(d => d.type === 'datapoint')
-            .map(d => {
+        this.datapoints$ = this.reads$.pipe(
+            filter(d => d.type === 'datapoint'),
+            map(d => {
                 let pattern = find(types, t => t.type == 'datapoint').pattern;
                 let m = pattern.exec(d.data);
                 return {
@@ -105,7 +106,7 @@ export class WaterRower extends events.EventEmitter {
                     address: m[2],
                     value: m[3]
                 };
-            });
+            }));
 
         //emit the data event
         this.datapoints$.subscribe(d => {
